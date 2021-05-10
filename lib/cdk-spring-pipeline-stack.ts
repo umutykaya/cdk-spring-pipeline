@@ -113,10 +113,9 @@ export class CDKSpringPipeline extends cdk.Stack {
       taskDefinition: taskDef,
       domainZone: hostedZone,
       domainName: 'spring.umutykaya.com',
-      redirectHTTP: true,
+      // redirectHTTP: true,
       minHealthyPercent: 100,
-      listenerPort: 80,
-      certificate: certificate,
+      // certificate: certificate,
       healthCheckGracePeriod: cdk.Duration.seconds(30)
     });
 
