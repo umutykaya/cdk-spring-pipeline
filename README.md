@@ -125,6 +125,36 @@ This is a blank project for TypeScript development with CDK.
 
 ### Getting Started
 
+## Node Modules
+
+```bash
+node -v
+cdk --version
+tsc -v
+```
+
+
+```bash
+npm install -g aws-cdk@1.102.0
+npm install -g typescript@latest
+npm i --save-dev @types/node
+npm install
+```
+
+```bash
+export CDK_NEW_BOOTSTRAP=0
+export CDK_DEFAULT_ACCOUNT=<aws_account_id>
+export CDK_DEFAULT_REGION=<aws_region>
+cdk bootstrap --show-template > bootstrap-template.yaml 
+cdk bootstrap aws://$CDK_DEFAULT_ACCOUNT/$CDK_DEFAULT_REGION --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess --template bootstrap-template.yaml
+```
+clientName: string | process.env.CLIENT_NAME;
+environment: string | process.env.ENVIRONMENT;
+domain: string | process.env.DOMAIN;
+vpcId: string | process.env.VPC_ID;
+
+```
+
 ### Install Packages
 
 ```bash
