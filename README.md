@@ -10,10 +10,9 @@ CDK applications with enhanced integration and unittest capability.
 * AWS Cloud Development Kit: https://docs.aws.amazon.com/cdk/latest/guide/home.html
 
 ## Architecture
-<br>
-<p align="center">
-    <img src="../assets/img/diagram.png" />
-</p>
+
+![Diagram](/assets/img/diagram.png)
+Format: ![Alt Text](url)
 
 ## Getting Started
 
