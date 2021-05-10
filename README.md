@@ -56,7 +56,7 @@ You can see the following file structure while you clone the project.
 
 Suppose that you've already fork or clone the repository. Please find the main class `CDKSpringPipeline` and change the attributes and fill with your own credentials.
 
-Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`.Then, create a Secret Manager resource called `pipeline/secret`.
+
 
 
 ### Github Credentials
@@ -76,6 +76,8 @@ new codepipelineactions.GitHubSourceAction({
   output: sourceOutput
 })
 ```
+Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`.Then, create a Secret Manager resource called `pipeline/secret`.
+
 ```bash
 aws secretsmanager create-secret --name pipeline/spring-boot-react \
     --description "spring-boot-react" \
