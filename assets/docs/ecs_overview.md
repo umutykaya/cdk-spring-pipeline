@@ -1,9 +1,9 @@
 # ECS Overview
 
 In this article, the goal is to describe common concepts that we are using in UCO SDLC (software development lifecycle) in projects.
-
-<img src="../img/ecs_concept.png" />
-
+<p align="center">
+    <img src="../img/ecs_concept.png" width="500"/>
+</p>
 
 ## Terminology
 Continuous Delivery: A software development practice in which code changes are automatically built, tested, and prepared for a release to production.
