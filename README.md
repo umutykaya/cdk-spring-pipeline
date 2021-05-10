@@ -17,7 +17,7 @@ CDK applications with enhanced integration and unittest capability.
 
 ## Getting Started
 
-You can see the following file structure while you clone the project. Discover also [CFN Dia ](https://github.com/pistazie/cdk-dia)  architecture diagrams located in `/assets` directory. Also suggest to check out [CFN Dia ](https://github.com/mhlabs/cfn-diagram ) to comprehend the concept.
+You can see the following file structure while you clone the project. 
 
 ```
 ├── assets
@@ -49,15 +49,15 @@ You can see the following file structure while you clone the project. Discover a
 
 ### Checklist
 
+- [ ] Use your own AWS CLI Credentials
 - [ ] Create Secret Manager with Github token
 - [ ] Add Environment variables
-- [ ] Use your own AWS CLI
+- [ ] AWS CDK Bootstrap & Sync
 
 Suppose that you've already fork or clone the repository. Please find the main class `CDKSpringPipeline` and change the attributes and fill with your own credentials.
 
 Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`.Then, create a Secret Manager resource called `pipeline/secret`.
 
-### Usage
 
 ### Github Credentials
 
