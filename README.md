@@ -12,11 +12,6 @@ CDK applications with enhanced integration and unittest capability.
 ## Architecture
 
 
-
-
-
-
-
 ## Getting Started
 
 You should see the following file structure while you clone the project.
