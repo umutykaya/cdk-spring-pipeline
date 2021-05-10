@@ -2,7 +2,7 @@
 
 In this article, the goal is to describe common concepts that we are using in UCO SDLC (software development lifecycle) in projects.
 
-[[https://github.com/umutykaya/cdk-spring-pipeline/blob/master/assets/img/diagram.png|alt=diagram]]
+<img src="assets/img/ecs_concept.png" />
 
 
 ## Terminology

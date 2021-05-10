@@ -10,7 +10,7 @@ CDK Related:
 * CDK Python Github Pipelines Demo: https://github.com/aws-samples/cdk-pipelines-demo/tree/python 
 * CDK Typescript Fargate CI/CD : https://github.com/aws-samples/amazon-ecs-fargate-cdk-cicd 
 * CFN diagrams: https://github.com/mhlabs/cfn-diagram#readme 
-* CDK Dia: https://github.com/pistazie/cdk-dia
+* CDK Dia: https://github.com/pistazie/cdk-dia 
 * Fargate workshop cdk: https://github.com/aws-samples/amazon-ecs-fargate-workshop-dev-ops-data  [!]
 * ECS Fargate typscript:https://www.gravitywell.co.uk/insights/deploying-applications-to-ecs-fargate-with-aws-cdk/ 
     * Repo: https://github.com/georgeevans1995/cdk-templates 
