@@ -1,6 +1,8 @@
 # ECS Overview
 
-In this article, the goal is to describe common concepts that we are using in UCO SDLC (software development lifecycle) in projects.
+In this article, the goal is to describe common concepts that we are using SDLC (software development lifecycle) in the [project](https://github.com/umutykaya/cdk-spring-pipeline).
+
+<br>
 <p align="center">
     <img src="../img/ecs_concept.png" />
 </p>
