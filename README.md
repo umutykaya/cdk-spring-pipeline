@@ -12,7 +12,7 @@ CDK applications with enhanced integration and unittest capability.
 ## Architecture
 <br>
 <p align="center">
-    <img src="../img/diagram.png" />
+    <img src="../assets/img/diagram.png" />
 </p>
 
 ## Getting Started
