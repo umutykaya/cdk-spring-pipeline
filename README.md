@@ -17,7 +17,7 @@ CDK applications with enhanced integration and unittest capability.
 
 ## Getting Started
 
-You can see the following file structure while you clone the project. Discover also `cfn-dia` architecture diagrams located in `/assets` directory. Also suggest to check out [ECS Fargate ](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html) to comprehend the concept.
+You can see the following file structure while you clone the project. Discover also [CFN Dia ](https://github.com/pistazie/cdk-dia)  architecture diagrams located in `/assets` directory. Also suggest to check out [CFN Dia ](https://github.com/mhlabs/cfn-diagram ) to comprehend the concept.
 
 ```
 ├── assets
