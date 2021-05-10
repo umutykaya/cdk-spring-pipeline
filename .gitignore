@@ -3,7 +3,7 @@
 *.d.ts
 node_modules
 bootstrap-template.yaml
-.idea
+.idea/
 .vscode
 
 # CDK asset staging directory
