@@ -14,7 +14,7 @@ import acm = require('@aws-cdk/aws-certificatemanager');
 import route53 = require('@aws-cdk/aws-route53');
 
 export class CDKSpringPipeline extends cdk.Stack {
-   projectName: string = 'cdk-spring-pipeline';
+  projectName: string = 'cdk-spring-pipeline';
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -28,19 +28,23 @@ export class CDKSpringPipeline extends cdk.Stack {
     });
 
 
-    const instance = new rds.DatabaseInstance(this, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
-      // optional, defaults to m5.large
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-      vpc,
-      publiclyAccessible: true,
-      maxAllocatedStorage: 200
-    });
+    // const instance = new rds.DatabaseInstance(this, 'Instance', {
+    //   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+    //   // optional, defaults to m5.large
+    //   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+    //   vpc,
+    //   publiclyAccessible: true,
+    //   maxAllocatedStorage: 200,
+    //   vpcSubnets: {
+    //     subnetType: ec2.SubnetType.PUBLIC
+    //   }
+    // });
 
     const arn = 'arn:aws:acm:eu-west-1:223705206905:certificate/c3ec789f-ef9a-4533-ad92-b94dba2a4db8';
     const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', arn);
 
     const loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+      loadBalancerName: `${this.projectName}-lb`,
       vpc,
       internetFacing: true
     });
@@ -52,7 +56,7 @@ export class CDKSpringPipeline extends cdk.Stack {
     })
 
     const cluster = new ecs.Cluster(this, "cluster", {
-      clusterName:'spring-boot-service',
+      clusterName: 'spring-boot-service',
       vpc: vpc,
       containerInsights: true,
     });
@@ -113,10 +117,10 @@ export class CDKSpringPipeline extends cdk.Stack {
       minHealthyPercent: 100,
       listenerPort: 80,
       certificate: certificate,
-      healthCheckGracePeriod: cdk.Duration.seconds(0)
+      healthCheckGracePeriod: cdk.Duration.seconds(30)
     });
 
-    const scaling = fargateService.service.autoScaleTaskCount({ minCapacity:1, maxCapacity: 2 });
+    const scaling = fargateService.service.autoScaleTaskCount({ minCapacity: 1, maxCapacity: 2 });
     scaling.scaleOnCpuUtilization('CpuScaling', {
       targetUtilizationPercent: 50,
       scaleInCooldown: cdk.Duration.seconds(60),
@@ -125,7 +129,7 @@ export class CDKSpringPipeline extends cdk.Stack {
 
     fargateService.targetGroup.configureHealthCheck({
       path: "/",
-      healthyHttpCodes: '200-499',
+      healthyHttpCodes: '200-499'
     });
 
     // ***PIPELINE CONSTRUCTS***
@@ -133,7 +137,7 @@ export class CDKSpringPipeline extends cdk.Stack {
     // ECR - repo
     const ecrRepo = new ecr.Repository(this, 'EcrRepo', {
       imageScanOnPush: true,
-      repositoryName:'spring-boot-service',
+      repositoryName: 'spring-boot-service',
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
@@ -142,7 +146,7 @@ export class CDKSpringPipeline extends cdk.Stack {
       repo: 'spring-boot-service',
     });
 
-  
+
     // CODEBUILD - codeBuildProject
     const codeBuildProject = new codebuild.Project(this, 'project', {
       projectName: `${this.projectName}`,
@@ -172,7 +176,7 @@ export class CDKSpringPipeline extends cdk.Stack {
       versioned: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
-    /* Pipleine Artifacts Bucket is used by CodePipeline during Builds */
+    /* Pipeline Artifacts Bucket is used by CodePipeline during Builds */
     const pipelineArtifactsBucket = new s3.Bucket(this, 'PipelineArtifactsBucket', {
       bucketName: `codepipeline-artifacts-${this.projectName}`,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -253,7 +257,7 @@ export class CDKSpringPipeline extends cdk.Stack {
           stageName: 'Deploy-to-ECS',
           actions: [
             new codepipelineactions.EcsDeployAction({
-              actionName:'DeployAction',
+              actionName: 'DeployAction',
               service: fargateService.service,
               imageFile: new codepipeline.ArtifactPath(buildOutput, 'imagedefinitions.json')
             })],
