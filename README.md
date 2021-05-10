@@ -10,7 +10,10 @@ CDK applications with enhanced integration and unittest capability.
 * AWS Cloud Development Kit: https://docs.aws.amazon.com/cdk/latest/guide/home.html
 
 ## Architecture
-
+<br>
+<p align="center">
+    <img src="../img/diagram.png" />
+</p>
 
 ## Getting Started
 
@@ -45,13 +48,11 @@ You should see the following file structure while you clone the project.
 - [ ] Add Environment variables
 - [ ] Use your own AWS CLI
 
-
-
-
 Suppose that you've already fork or clone the repository. Please find the main class `CDKSpringPipeline` and change the attributes and fill with your own credentials.
 
 Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`.Then, create a Secret Manager resource called `pipeline/secret`.
-### Github
+
+### Github Credentials
 
 You need to create following
 - Personal access token: https://github.com/settings/tokens/new
