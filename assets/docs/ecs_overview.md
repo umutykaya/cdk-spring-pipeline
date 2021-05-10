@@ -2,7 +2,7 @@
 
 In this article, the goal is to describe common concepts that we are using in UCO SDLC (software development lifecycle) in projects.
 
-<img src="assets/img/ecs_concept.png" />
+<img src="../img/ecs_concept.png" />
 
 
 ## Terminology
