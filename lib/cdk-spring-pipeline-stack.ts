@@ -33,6 +33,7 @@ export class CDKSpringPipeline extends cdk.Stack {
       // optional, defaults to m5.large
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       vpc,
+      publiclyAccessible: true,
       maxAllocatedStorage: 200
     });
 
