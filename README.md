@@ -17,30 +17,35 @@ CDK applications with enhanced integration and unittest capability.
 
 ## Getting Started
 
-You should see the following file structure while you clone the project.
+You can see the following file structure while you clone the project. Discover also `cfn-dia` architecture diagrams located in `/assets` directory. Also suggest to check out [ECS Fargate ](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html) to comprehend the concept.
 
 ```
-├── README.md
 ├── assets
+│   ├── docs
+│   ├── img
+│   ├── template.drawio
+│   └── template.html
 ├── bin
-│   └── cdk-spring-pipeline.ts
+│   └── cdk-spring-pipeline.ts
 ├── bootstrap-template.yaml
 ├── cdk.json
+├── diagram.png.dot
 ├── jest.config.js
 ├── lib
-│   └── cdk-spring-pipeline-stack.ts
+│   └── cdk-spring-pipeline-stack.ts
 ├── package-lock.json
 ├── package.json
+├── readme.md
 ├── test
-│   └── cdk-spring-pipeline.test.ts
+│   └── cdk-spring-pipeline.test.ts
 └── tsconfig.json
 
 ```
 
 ### Prerequisites:
 
-- cdk version : 1.95.0 (build 28ba8b4)
-- Maven and npm package managers
+- CDK CLI version : 1.95.0 >= 
+- Maven and NPM package manager
 
 ### Checklist
 
@@ -51,6 +56,8 @@ You should see the following file structure while you clone the project.
 Suppose that you've already fork or clone the repository. Please find the main class `CDKSpringPipeline` and change the attributes and fill with your own credentials.
 
 Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`.Then, create a Secret Manager resource called `pipeline/secret`.
+
+### Usage
 
 ### Github Credentials
 
