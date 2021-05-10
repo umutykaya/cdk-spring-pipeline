@@ -82,14 +82,4 @@ aws secretsmanager create-secret --name pipeline/spring-boot-react \
     --secret-string file://gh_token.json
 ```
 
-```typescript
-new codepipelineactions.GitHubSourceAction({
-  actionName: 'GitHub_Source',
-  owner: '<>',
-  repo: 'spring-boot-react',
-  branch: 'master',
-  oauthToken: cdk.SecretValue.secretsManager("pipeline/secret"),
-  output: sourceOutput
-})
-```
 
