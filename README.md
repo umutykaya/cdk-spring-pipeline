@@ -1,8 +1,103 @@
 # CDK Spring Pipeline
 
-This is a blank project for TypeScript development with CDK.
+## Overview
+
+The pipeline intended to integrate any kind of spring boot application CDK applications with enhanced integration and unittest capability.
+### Related links
+* Spring Boot: https://spring.io/projects/spring-boot
+* Spring Cloud: https://spring.io/projects/spring-cloud
+* AWS Cloud Development Kit: https://docs.aws.amazon.com/cdk/latest/guide/home.html
+
+## Architecture
+
+
+
+
+
+
 
 ## Getting Started
+
+### Prerequisites:
+
+- cdk version : 1.95.0 (build 28ba8b4)
+- Maven and npm package managers
+
+### Checklist
+
+- [ ] Create Secret Manager with Github token
+- [ ] Add Environment variables
+- [ ] Use your own AWS CLI
+
+
+
+
+Suppose that you've already fork or clone the repository. Please find the main class `CDKSpringPipeline` and change the attributes and fill with your own credentials.
+
+Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`.Then, create a Secret Manager resource called `pipeline/secret`.
+### Github
+
+You need to create following
+- Personal access token: https://github.com/settings/tokens/new
+- Token: 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
+
+`CDKSpringPipeline` class`cdk-spring-pipeline-stack.ts`. Dependant on your secret name oauth value is mutable and you can change it in below.
+```typescript
+new codepipelineactions.GitHubSourceAction({
+  actionName: 'GitHub_Source',
+  owner: '<nickname>',
+  repo: '<repo_name>',
+  branch: '<branch>',
+  oauthToken: cdk.SecretValue.secretsManager("<secret_name>"),
+  output: sourceOutput
+})
+```
+```bash
+aws secretsmanager create-secret --name pipeline/spring-boot-react \
+    --description "spring-boot-react" \
+    --secret-string file://gh_token.json
+```
+
+```typescript
+new codepipelineactions.GitHubSourceAction({
+  actionName: 'GitHub_Source',
+  owner: '<>',
+  repo: 'spring-boot-react',
+  branch: 'master',
+  oauthToken: cdk.SecretValue.secretsManager("pipeline/secret"),
+  output: sourceOutput
+})
+```
+
+### Codebuild
+
+```bash
+aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONAL_ACCESS_TOKEN --token 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
+```
+
+
+### Auto Scaling
+
+You can define `minCapacity` and `maxCapacity` attributes according to your workload.
+
+```typescript
+    const scaling = fargateService.service.autoScaleTaskCount({ minCapacity:1, maxCapacity: 2 });
+    scaling.scaleOnCpuUtilization('CpuScaling', {
+      targetUtilizationPercent: 50,
+      scaleInCooldown: cdk.Duration.seconds(60),
+      scaleOutCooldown: cdk.Duration.seconds(60)
+    });
+```
+
+## Environment Variables
+
+
+
+### Configuration
+
+This is a blank project for TypeScript development with CDK.
+
+### Getting Started
 
 ### Install Packages
 
