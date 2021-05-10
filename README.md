@@ -2,7 +2,8 @@
 
 ## Overview
 
-The pipeline intended to integrate any kind of spring boot application CDK applications with enhanced integration and unittest capability.
+The pipeline intended to integrate any kind of spring boot web service to ECS Fargate service 
+CDK applications with enhanced integration and unittest capability.
 ### Related links
 * Spring Boot: https://spring.io/projects/spring-boot
 * Spring Cloud: https://spring.io/projects/spring-cloud
@@ -17,6 +18,26 @@ The pipeline intended to integrate any kind of spring boot application CDK appli
 
 
 ## Getting Started
+
+You should see the following file structure while you clone the project.
+
+```
+├── README.md
+├── assets
+├── bin
+│   └── cdk-spring-pipeline.ts
+├── bootstrap-template.yaml
+├── cdk.json
+├── jest.config.js
+├── lib
+│   └── cdk-spring-pipeline-stack.ts
+├── package-lock.json
+├── package.json
+├── test
+│   └── cdk-spring-pipeline.test.ts
+└── tsconfig.json
+
+```
 
 ### Prerequisites:
 
@@ -90,6 +111,11 @@ You can define `minCapacity` and `maxCapacity` attributes according to your work
 ```
 
 ## Environment Variables
+
+```
+export APP_NAME=cdk-spring-pipeline
+
+```
 
 
 

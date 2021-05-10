@@ -14,7 +14,7 @@ import acm = require('@aws-cdk/aws-certificatemanager');
 import route53 = require('@aws-cdk/aws-route53');
 
 export class CDKSpringPipeline extends cdk.Stack {
-  private readonly projectName: string = 'cdk-pipeline';
+  private readonly projectName: string = process.env.MYBUCKET || "APP_NAME";
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
