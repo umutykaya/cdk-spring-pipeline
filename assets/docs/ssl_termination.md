@@ -39,32 +39,6 @@ aws iam upload-server-certificate --server-certificate-name ExampleCertificate
                                     --tags '{"Name": "umutykaya"}'
 									
 ```									
-```bash
-cat <<EOF > castore.cfg
-[ req ]
-default_bits = 2048
-default_keyfile = my-aws-private.key
-distinguished_name = req_distinguished_name
-req_extensions = v3_req
-prompt = no
-[ req_distinguished_name ]
-C = TR
-ST = Istanbul
-L = Kadikoy
-O = umutykaya.com
-OU = umutykaya.com
-CN= ecs-encryption.awsblogs.info ## Use your domain
-emailAddress = yalcinkayaumut@outlook.com ## Use your email address
-[v3_ca]
-subjectKeyIdentifier=hash
-authorityKeyIdentifier=keyid:always,issuer:always
-basicConstraints = CA:true
-[v3_req]
-## Extensions to add to a certificate request
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-EOF
-```
 
 ```
 openssl genrsa -out castore.key 2048
