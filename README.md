@@ -76,7 +76,7 @@ new codepipelineactions.GitHubSourceAction({
   output: sourceOutput
 })
 ```
-Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`.Then, create a Secret Manager resource called `pipeline/secret`.
+Inside of the `gh_token.json` you should pass value as plain text format. ex: `ghp_1234bkLW89212`. [Here](https://github.com/umutykaya/cdk-spring-pipeline/blob/master/assets/docs/github_token.md), it explains to create Github  personal access token. Then, create a Secret Manager resource called `pipeline/secret`.
 
 ```bash
 aws secretsmanager create-secret --name pipeline/spring-boot-react \
