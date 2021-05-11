@@ -2,7 +2,7 @@
 
 ## Overview
 
-The pipeline intended to integrate any kind of spring boot web service to [ECS Fargate](https://github.com/umutykaya/cdk-spring-pipeline/blob/master/assets/docs/ecs_overview.md). CDK applications provide Infrastructure [is](https://youtu.be/ZWCvNFUN-sU) Code capability and to make enhanced integration and unittest capability.
+The pipeline intended to integrate any kind of spring boot web service to [ECS Fargate](https://github.com/umutykaya/cdk-spring-pipeline/blob/master/assets/docs/ecs_overview.md). CDK applications provide Infrastructure [is](https://youtu.be/ZWCvNFUN-sU) Code capability. It is simple to have integration and unittests of your application during the pipeline process.
 
 ### Related links
 * Spring Boot: https://spring.io/projects/spring-boot
