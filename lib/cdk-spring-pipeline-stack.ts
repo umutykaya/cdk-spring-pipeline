@@ -105,6 +105,7 @@ export class CDKSpringPipeline extends cdk.Stack {
       containerPort: 8080,
       protocol: ecs.Protocol.TCP
     });
+    
 
     const fargateService = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "fargateService", {
       serviceName: 'spring-boot-service',
@@ -129,6 +130,15 @@ export class CDKSpringPipeline extends cdk.Stack {
     fargateService.targetGroup.configureHealthCheck({
       path: "/",
       healthyHttpCodes: '200-499'
+    });
+
+    const loadBalancedFargateService = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'DBService', {
+      cluster,
+      memoryLimitMiB: 1024,
+      cpu: 512,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry("postgres"),
+      },
     });
 
     // ***PIPELINE CONSTRUCTS***
@@ -235,7 +245,7 @@ export class CDKSpringPipeline extends cdk.Stack {
               actionName: 'GitHub_Source',
               owner: 'umutykaya',
               repo: 'spring-boot-react',
-              branch: 'master',
+              branch: 'develop',
               oauthToken: cdk.SecretValue.secretsManager("pipeline/secret"),
               output: sourceOutput
             }),
@@ -279,6 +289,7 @@ export class CDKSpringPipeline extends cdk.Stack {
     //OUTPUT
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'DBLoadBalancerDNS', { value: loadBalancedFargateService.loadBalancer.loadBalancerDnsName });
 
   }
 }
