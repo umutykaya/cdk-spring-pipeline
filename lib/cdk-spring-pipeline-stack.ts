@@ -28,17 +28,15 @@ export class CDKSpringPipeline extends cdk.Stack {
     });
 
 
-    // const instance = new rds.DatabaseInstance(this, 'Instance', {
-    //   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
-    //   // optional, defaults to m5.large
-    //   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-    //   vpc,
-    //   publiclyAccessible: true,
-    //   maxAllocatedStorage: 200,
-    //   vpcSubnets: {
-    //     subnetType: ec2.SubnetType.PUBLIC
-    //   }
-    // });
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+
+    new rds.DatabaseInstance(this, 'InstanceWithUsername', {
+      databaseName: 'spring-postgres',
+      engine,
+      vpc,
+      credentials: rds.Credentials.fromGeneratedSecret('postgres',{secretName: 'pipeline/rds'}), // Creates an admin user of postgres with a generated password
+      publiclyAccessible: true
+    });
 
     const arn = 'arn:aws:acm:eu-west-1:223705206905:certificate/c3ec789f-ef9a-4533-ad92-b94dba2a4db8';
     const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', arn);
@@ -130,15 +128,6 @@ export class CDKSpringPipeline extends cdk.Stack {
     fargateService.targetGroup.configureHealthCheck({
       path: "/",
       healthyHttpCodes: '200-499'
-    });
-
-    const loadBalancedFargateService = new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'DBService', {
-      cluster,
-      memoryLimitMiB: 1024,
-      cpu: 512,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry("postgres"),
-      },
     });
 
     // ***PIPELINE CONSTRUCTS***
@@ -289,7 +278,7 @@ export class CDKSpringPipeline extends cdk.Stack {
     //OUTPUT
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
-    new cdk.CfnOutput(this, 'DBLoadBalancerDNS', { value: loadBalancedFargateService.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'RDSEndpoint', { value: rds.Endpoint.toString() });
 
   }
 }
