@@ -13,6 +13,10 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import acm = require('@aws-cdk/aws-certificatemanager');
 import route53 = require('@aws-cdk/aws-route53');
 
+const myIP = '0.0.0.0/0'; // IP address from which you want to connect to RDS
+const rdsSecretName = 'pipeline/rds';
+const ghbSecretName = 'pipeline/secret';
+
 export class CDKSpringPipeline extends cdk.Stack {
   projectName: string = 'cdk-spring-pipeline';
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -27,29 +31,70 @@ export class CDKSpringPipeline extends cdk.Stack {
       maxAzs: 2,
     });
 
-
-    // const instance = new rds.DatabaseInstance(this, 'Instance', {
-    //   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
-    //   // optional, defaults to m5.large
-    //   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-    //   vpc,
-    //   publiclyAccessible: true,
-    //   maxAllocatedStorage: 200,
-    //   vpcSubnets: {
-    //     subnetType: ec2.SubnetType.PUBLIC
-    //   }
-    // });
-
-    const arn = 'arn:aws:acm:eu-west-1:223705206905:certificate/c3ec789f-ef9a-4533-ad92-b94dba2a4db8';
-    const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', arn);
-
-    const loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-      loadBalancerName: `${this.projectName}-lb`,
-      vpc,
-      internetFacing: true
+    /**
+     *  RDS Postgres 
+     */
+    const DBGroup = new ec2.SecurityGroup(this, 'Proxy to DB Connection', {
+      vpc
+    });
+    const serviceToDBGroup = new ec2.SecurityGroup(this, 'ECS to DB Connection', {
+      vpc
     });
 
-    // Import already exist hostedzone
+    const bastionToDBGroup = new ec2.SecurityGroup(this, 'bastion to DB Connection', {
+      vpc
+    });
+
+    DBGroup.addIngressRule(DBGroup, ec2.Port.tcp(5432), 'allow proxy to db');
+
+    DBGroup.addIngressRule(serviceToDBGroup, ec2.Port.tcp(5432), 'allow ECS to db');
+    DBGroup.addIngressRule(bastionToDBGroup, ec2.Port.tcp(5432), 'allow bastion to db');
+    bastionToDBGroup.addIngressRule(ec2.Peer.ipv4(myIP), ec2.Port.tcp(22));
+    serviceToDBGroup.addIngressRule(ec2.Peer.ipv4(myIP), ec2.Port.tcp(5432));
+    
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+
+    const rdsInstance = new rds.DatabaseInstance(this, 'InstanceWithUsername', {
+      engine,
+      vpc,
+      securityGroups: [DBGroup],
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      deletionProtection: false,
+      credentials: rds.Credentials.fromGeneratedSecret('postgres',{secretName: rdsSecretName}), // Creates an admin user of postgres with a generated password
+      publiclyAccessible: true,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC
+      }
+    });
+
+      //create bastion to init/alter db schema
+      const bastion = new ec2.BastionHostLinux(this, "bastion", {
+        vpc: vpc,
+        instanceName: "bastion",
+        subnetSelection: {subnetType: ec2.SubnetType.PUBLIC},
+        securityGroup: bastionToDBGroup,
+      });
+  
+      bastion.instance.addUserData(
+        "sudo echo 'GatewayPorts yes' >> /etc/ssh/sshd_config",
+        "sudo service sshd restart",
+      );
+  
+      bastion.allowSshAccessFrom(ec2.Peer.ipv4(myIP));
+      
+    /**
+     * Route53 and ACM constructs
+     */
+
+     const arn = 'arn:aws:acm:eu-west-1:223705206905:certificate/c3ec789f-ef9a-4533-ad92-b94dba2a4db8';
+     const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', arn);
+ 
+     const loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+       loadBalancerName: `${this.projectName}-lb`,
+       vpc,
+       internetFacing: true
+     });
+
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'hostedZone', {
       hostedZoneId: 'Z0309870FZYTOAVNETRD',
       zoneName: 'umutykaya.com'
@@ -105,11 +150,13 @@ export class CDKSpringPipeline extends cdk.Stack {
       containerPort: 8080,
       protocol: ecs.Protocol.TCP
     });
+    
 
     const fargateService = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "fargateService", {
       serviceName: 'spring-boot-service',
       loadBalancer: loadBalancer,
       cluster: cluster,
+      securityGroups: [serviceToDBGroup],
       taskDefinition: taskDef,
       domainZone: hostedZone,
       domainName: 'spring.umutykaya.com',
@@ -119,12 +166,12 @@ export class CDKSpringPipeline extends cdk.Stack {
       healthCheckGracePeriod: cdk.Duration.seconds(30)
     });
 
-    const scaling = fargateService.service.autoScaleTaskCount({ minCapacity: 1, maxCapacity: 2 });
-    scaling.scaleOnCpuUtilization('CpuScaling', {
-      targetUtilizationPercent: 50,
-      scaleInCooldown: cdk.Duration.seconds(60),
-      scaleOutCooldown: cdk.Duration.seconds(60)
-    });
+    // const scaling = fargateService.service.autoScaleTaskCount({ minCapacity: 1, maxCapacity: 2 });
+    // scaling.scaleOnCpuUtilization('CpuScaling', {
+    //   targetUtilizationPercent: 50,
+    //   scaleInCooldown: cdk.Duration.seconds(60),
+    //   scaleOutCooldown: cdk.Duration.seconds(60)
+    // });
 
     fargateService.targetGroup.configureHealthCheck({
       path: "/",
@@ -235,8 +282,8 @@ export class CDKSpringPipeline extends cdk.Stack {
               actionName: 'GitHub_Source',
               owner: 'umutykaya',
               repo: 'spring-boot-react',
-              branch: 'master',
-              oauthToken: cdk.SecretValue.secretsManager("pipeline/secret"),
+              branch: 'develop',
+              oauthToken: cdk.SecretValue.secretsManager(ghbSecretName),
               output: sourceOutput
             }),
           ],
@@ -277,8 +324,11 @@ export class CDKSpringPipeline extends cdk.Stack {
     }));
 
     //OUTPUT
-
+    new cdk.CfnOutput(this, "publicDNS", { value: bastion.instance.instancePublicDnsName });
+    new cdk.CfnOutput(this, "instanceID", { value: bastion.instanceId });
+    new cdk.CfnOutput(this, "rdsSecretName", { value: rdsSecretName });
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, 'RDSEndpoint', { value: rdsInstance.dbInstanceEndpointAddress });
 
   }
 }
