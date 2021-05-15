@@ -12,7 +12,7 @@ The pipeline intended to integrate any kind of spring boot web service to [ECS F
 ## Architecture
 <br>
 <p align="center">
-    <img src="assets/img/diagram.png" />
+    <img src="assets/img/diagram-v2.png" />
 </p>
 
 ## Getting Started
