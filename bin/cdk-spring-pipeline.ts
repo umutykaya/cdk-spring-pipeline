@@ -2,7 +2,6 @@
 import 'source-map-support/register';
 import cdk = require('@aws-cdk/core');
 import { CDKSpringPipeline } from '../lib/cdk-spring-pipeline-stack';
-// import { RdsBastionStack } from '../lib/rds-postgres-stack';
 
 const app = new cdk.App();
 
@@ -12,6 +11,3 @@ const env = {
 };
 
 new CDKSpringPipeline(app, 'CDKSpringPipeline');
-// new RdsBastionStack(app, 'RdsBastionStack');
-
-

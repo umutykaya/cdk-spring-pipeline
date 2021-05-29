@@ -13,18 +13,18 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import acm = require('@aws-cdk/aws-certificatemanager');
 import route53 = require('@aws-cdk/aws-route53');
 
-const myIP = '24.133.236.1/32'; 
-const domainName = 'spring.commencis-cloud.com';
-const certArn = 'arn:aws:acm:eu-west-1:461902953491:certificate/df046d09-1f1c-4979-b619-4be512876959';
-const hostedZoneId = 'Z05804773E1Y13CUEI66N';
-const instanceIdentifier = 'spring';
-const rdsSecretName = 'pipeline/rds';
-const owner = 'umutykaya';
-const repo = 'spring-boot-react';
-const branch = 'master';
-const ghbSecretName = 'pipeline/secret';
-const clusterName = 'spring-cluster';
-const serviceName = 'spring-service';
+const myIP = process.env.myIP || '0.0.0.0/0'; 
+const domainName = process.env.domainName || 'subdomain.example.com';
+const certArn = process.env.certArn || 'arn:aws:acm:<region>:<account_id>:certificate/<certificate_id>';
+const hostedZoneId = process.env.hostedZoneId || 'hosted_zone_id';
+const instanceIdentifier = process.env.instanceIdentifier || 'spring-postgres';
+const rdsSecretName = process.env.rdsSecretName || 'pipeline/rds';
+const owner = process.env.owner || 'umutykaya';
+const repo = process.env.repo || 'spring-boot-react';
+const branch = process.env.branch || 'master';
+const ghbSecretName = process.env.ghbSecretName || 'pipeline/secret';
+const clusterName = process.env.clusterName || 'spring-cluster';
+const serviceName = process.env.serviceName || 'spring-service';
 
 export class CDKSpringPipeline extends cdk.Stack {
   projectName: string = 'cdk-spring-pipeline';

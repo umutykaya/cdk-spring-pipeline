@@ -52,12 +52,9 @@ You can see the following file structure while you clone the project.
 - [ ] Use your own AWS CLI Credentials
 - [ ] Create Secret Manager with Github token
 - [ ] Add Environment variables
-- [ ] AWS CDK Bootstrap & Sync
+- [ ] AWS CDK Bootstrap, Sync &
 
 Suppose that you've already fork or clone the repository. Please find the main class `CDKSpringPipeline` and change the attributes and fill with your own credentials.
-
-
-
 
 ### Github Credentials
 
@@ -83,5 +80,46 @@ aws secretsmanager create-secret --name pipeline/spring-boot-react \
     --description "spring-boot-react" \
     --secret-string file://gh_token.json
 ```
+### Environment Variables
 
 
+```bash
+export myIP='0.0.0.0/0'
+export domainName='subdomain.example.com'
+export certArn='arn:aws:acm:<region>:<account_id>:certificate/<certificate_id>'
+export hostedZoneId='zone_id';
+export instanceIdentifier='spring-postgres'
+export rdsSecretName='pipeline/rds'
+export owner='repo_owner'
+export repo='repo_name'
+export branch='master'
+export ghbSecretName='pipeline/secret'
+export clusterName='spring-cluster'
+export serviceName='spring-service'
+```
+
+## Workflow
+To run the project, use below scripts iteratively in your terminal.
+
+```bash
+export CDK_NEW_BOOTSTRAP=0
+export CDK_DEFAULT_ACCOUNT=<account_id>
+export CDK_DEFAULT_REGION=<region>
+cdk bootstrap --show-template > bootstrap-template.yaml
+cdk bootstrap aws://$CDK_DEFAULT_ACCOUNT/$CDK_DEFAULT_REGION --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess --template bootstrap-template.yaml
+```
+
+Install project specific dependencies.
+
+```bash
+npm install @types/node
+npm install 
+npm run build
+```
+You can check diff of changes, synthesize your application stack and deploy.
+
+```bash
+cdk diff
+cdk synth
+cdk deploy
+```
