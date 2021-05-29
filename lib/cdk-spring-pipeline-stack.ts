@@ -17,7 +17,6 @@ const myIP = process.env.myIP || '0.0.0.0/0';
 const domainName = process.env.domainName || 'subdomain.example.com';
 const certArn = process.env.certArn || 'arn:aws:acm:<region>:<account_id>:certificate/<certificate_id>';
 const hostedZoneId = process.env.hostedZoneId || 'hosted_zone_id';
-const instanceIdentifier = process.env.instanceIdentifier || 'spring-postgres';
 const rdsSecretName = process.env.rdsSecretName || 'pipeline/rds';
 const owner = process.env.owner || 'umutykaya';
 const repo = process.env.repo || 'spring-boot-react';
@@ -66,7 +65,6 @@ export class CDKSpringPipeline extends cdk.Stack {
     const rdsInstance = new rds.DatabaseInstance(this, 'InstanceWithUsername', {
       engine,
       vpc,
-      instanceIdentifier,
       securityGroups: [DBGroup],
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       deletionProtection: false,
@@ -336,9 +334,10 @@ export class CDKSpringPipeline extends cdk.Stack {
     //OUTPUT
     new cdk.CfnOutput(this, "publicDNS", { value: bastion.instance.instancePublicDnsName });
     new cdk.CfnOutput(this, "instanceID", { value: bastion.instanceId });
-    new cdk.CfnOutput(this, "rdsSecretName", { value: rdsSecretName });
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, "rdsSecretName", { value: rdsSecretName });
     new cdk.CfnOutput(this, 'RDSEndpoint', { value: rdsInstance.dbInstanceEndpointAddress });
+    new cdk.CfnOutput(this, 'RDSIdentifier', { value: rdsInstance.instanceIdentifier });
 
   }
 }
