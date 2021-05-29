@@ -13,9 +13,17 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import acm = require('@aws-cdk/aws-certificatemanager');
 import route53 = require('@aws-cdk/aws-route53');
 
-const myIP = '0.0.0.0/0'; // IP address from which you want to connect to RDS
-const rdsSecretName = 'pipeline/rds';
-const ghbSecretName = 'pipeline/secret';
+const myIP = process.env.myIP || '0.0.0.0/0'; 
+const domainName = process.env.domainName || 'subdomain.example.com';
+const certArn = process.env.certArn || 'arn:aws:acm:<region>:<account_id>:certificate/<certificate_id>';
+const hostedZoneId = process.env.hostedZoneId || 'hosted_zone_id';
+const rdsSecretName = process.env.rdsSecretName || 'pipeline/rds';
+const owner = process.env.owner || 'umutykaya';
+const repo = process.env.repo || 'spring-boot-react';
+const branch = process.env.branch || 'master';
+const ghbSecretName = process.env.ghbSecretName || 'pipeline/secret';
+const clusterName = process.env.clusterName || 'spring-cluster';
+const serviceName = process.env.serviceName || 'spring-service';
 
 export class CDKSpringPipeline extends cdk.Stack {
   projectName: string = 'cdk-spring-pipeline';
@@ -62,6 +70,7 @@ export class CDKSpringPipeline extends cdk.Stack {
       deletionProtection: false,
       credentials: rds.Credentials.fromGeneratedSecret('postgres',{secretName: rdsSecretName}), // Creates an admin user of postgres with a generated password
       publiclyAccessible: true,
+      instanceType:  ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC
       }
@@ -86,8 +95,7 @@ export class CDKSpringPipeline extends cdk.Stack {
      * Route53 and ACM constructs
      */
 
-     const arn = 'arn:aws:acm:eu-west-1:223705206905:certificate/c3ec789f-ef9a-4533-ad92-b94dba2a4db8';
-     const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', arn);
+     const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', certArn);
  
      const loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', {
        loadBalancerName: `${this.projectName}-lb`,
@@ -96,12 +104,12 @@ export class CDKSpringPipeline extends cdk.Stack {
      });
 
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'hostedZone', {
-      hostedZoneId: 'Z0309870FZYTOAVNETRD',
-      zoneName: 'umutykaya.com'
+      hostedZoneId,
+      zoneName: 'commencis-cloud.com'
     })
 
     const cluster = new ecs.Cluster(this, "cluster", {
-      clusterName: 'spring-boot-service',
+      clusterName,
       vpc: vpc,
       containerInsights: true,
     });
@@ -153,13 +161,13 @@ export class CDKSpringPipeline extends cdk.Stack {
     
 
     const fargateService = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "fargateService", {
-      serviceName: 'spring-boot-service',
+      serviceName,
       loadBalancer: loadBalancer,
       cluster: cluster,
       securityGroups: [serviceToDBGroup],
       taskDefinition: taskDef,
       domainZone: hostedZone,
-      domainName: 'spring.umutykaya.com',
+      domainName,
       // redirectHTTP: true,
       minHealthyPercent: 100,
       // certificate: certificate,
@@ -183,13 +191,13 @@ export class CDKSpringPipeline extends cdk.Stack {
     // ECR - repo
     const ecrRepo = new ecr.Repository(this, 'EcrRepo', {
       imageScanOnPush: true,
-      repositoryName: 'spring-boot-service',
+      repositoryName: 'spring-boot-react',
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     const gitHubSource = codebuild.Source.gitHub({
-      owner: 'umutykaya',
-      repo: 'spring-boot-service',
+      owner,
+      repo,
     });
 
 
@@ -280,9 +288,9 @@ export class CDKSpringPipeline extends cdk.Stack {
           actions: [
             new codepipelineactions.GitHubSourceAction({
               actionName: 'GitHub_Source',
-              owner: 'umutykaya',
-              repo: 'spring-boot-react',
-              branch: 'develop',
+              owner,
+              repo,
+              branch,
               oauthToken: cdk.SecretValue.secretsManager(ghbSecretName),
               output: sourceOutput
             }),
@@ -326,9 +334,10 @@ export class CDKSpringPipeline extends cdk.Stack {
     //OUTPUT
     new cdk.CfnOutput(this, "publicDNS", { value: bastion.instance.instancePublicDnsName });
     new cdk.CfnOutput(this, "instanceID", { value: bastion.instanceId });
-    new cdk.CfnOutput(this, "rdsSecretName", { value: rdsSecretName });
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
+    new cdk.CfnOutput(this, "rdsSecretName", { value: rdsSecretName });
     new cdk.CfnOutput(this, 'RDSEndpoint', { value: rdsInstance.dbInstanceEndpointAddress });
+    new cdk.CfnOutput(this, 'RDSIdentifier', { value: rdsInstance.instanceIdentifier });
 
   }
 }
