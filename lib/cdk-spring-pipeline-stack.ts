@@ -13,7 +13,8 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import acm = require('@aws-cdk/aws-certificatemanager');
 import route53 = require('@aws-cdk/aws-route53');
 
-const myIP = '0.0.0.0/0'; // IP address from which you want to connect to RDS
+const myIP = '24.133.236.1/32'; // IP address from which you want to connect to RDS
+const certArn = 'arn:aws:acm:region:account_id:certificate/cerificate_id';
 const rdsSecretName = 'pipeline/rds';
 const ghbSecretName = 'pipeline/secret';
 
@@ -57,11 +58,13 @@ export class CDKSpringPipeline extends cdk.Stack {
     const rdsInstance = new rds.DatabaseInstance(this, 'InstanceWithUsername', {
       engine,
       vpc,
+      databaseName: 'spring',
       securityGroups: [DBGroup],
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       deletionProtection: false,
       credentials: rds.Credentials.fromGeneratedSecret('postgres',{secretName: rdsSecretName}), // Creates an admin user of postgres with a generated password
       publiclyAccessible: true,
+      instanceType:  ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC
       }
@@ -86,8 +89,7 @@ export class CDKSpringPipeline extends cdk.Stack {
      * Route53 and ACM constructs
      */
 
-     const arn = 'arn:aws:acm:eu-west-1:223705206905:certificate/c3ec789f-ef9a-4533-ad92-b94dba2a4db8';
-     const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', arn);
+     const certificate = acm.Certificate.fromCertificateArn(this, 'certificate', certArn);
  
      const loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', {
        loadBalancerName: `${this.projectName}-lb`,
