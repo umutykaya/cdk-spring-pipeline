@@ -87,6 +87,15 @@ export serviceName='spring-service'
 ```
 
 ## Workflow
+
+Install project specific dependencies.
+
+```bash
+npm install @types/node
+npm install 
+npm run build
+```
+
 To run the project, use below scripts iteratively in your terminal.
 
 ```bash
@@ -95,14 +104,6 @@ export CDK_DEFAULT_ACCOUNT=<account_id>
 export CDK_DEFAULT_REGION=<region>
 cdk bootstrap --show-template > bootstrap-template.yaml
 cdk bootstrap aws://$CDK_DEFAULT_ACCOUNT/$CDK_DEFAULT_REGION --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess --template bootstrap-template.yaml
-```
-
-Install project specific dependencies.
-
-```bash
-npm install @types/node
-npm install 
-npm run build
 ```
 You can check diff of changes, synthesize your application stack and deploy.
 

@@ -14,9 +14,10 @@ import acm = require('@aws-cdk/aws-certificatemanager');
 import route53 = require('@aws-cdk/aws-route53');
 
 const myIP = process.env.myIP || '0.0.0.0/0'; 
+const hostedZoneId = process.env.hostedZoneId || 'hosted_zone_id';
+const zoneName = process.env.zoneName || 'example.com';
 const domainName = process.env.domainName || 'subdomain.example.com';
 const certArn = process.env.certArn || 'arn:aws:acm:<region>:<account_id>:certificate/<certificate_id>';
-const hostedZoneId = process.env.hostedZoneId || 'hosted_zone_id';
 const rdsSecretName = process.env.rdsSecretName || 'pipeline/rds';
 const owner = process.env.owner || 'umutykaya';
 const repo = process.env.repo || 'spring-boot-react';
@@ -105,7 +106,7 @@ export class CDKSpringPipeline extends cdk.Stack {
 
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'hostedZone', {
       hostedZoneId,
-      zoneName: 'commencis-cloud.com'
+      zoneName
     })
 
     const cluster = new ecs.Cluster(this, "cluster", {
